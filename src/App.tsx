@@ -1,35 +1,31 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useState } from 'react';
+import './App.css';
+import Navbar from './Navbar';
+import Wellcome from './Wellcome';
+import Dict from './Dict';
+import Test from './Test';
+import List from './List';
+import Retry from './Retry';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [selectContent, setSelectContent] = useState<string>('Home');
 
+  const clickContent = (e: React.MouseEvent<HTMLButtonElement>) => {
+    // console.log(e.currentTarget.id);
+    // console.log(typeof e.currentTarget.id);
+    setSelectContent(e.currentTarget.id);
+  };
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <Navbar onClick={clickContent} />
+      {/* ボタンによってレンダリングをスイッチング */}
+      {selectContent === 'Home' && <Wellcome />}
+      {selectContent === 'Dict' && <Dict />}
+      {selectContent === 'Test' && <Test />}
+      {selectContent === 'List' && <List />}
+      {selectContent === 'Retry' && <Retry />}
     </>
-  )
+  );
 }
 
-export default App
+export default App;
