@@ -1,14 +1,17 @@
-import { useState } from 'react';
-// import './App.css'
+import { useState } from "react";
+import "./Wellcome.css";
 
 function Wellcome() {
   return (
     <>
-      <div>ようこそ</div>
-      <img src="/vite.svg" alt="vite" />
-      <div>君たちは今、</div>
-      <img src="/vite.svg" alt="vite" />
-      <div>ポケモンを覚えよう</div>
+      <div>ポケモンの世界へようこそ</div>
+      <img className="poke-dict-fig" src="/pokedict.png" alt="vite" />
+
+      <div className="second-message">
+        150匹いると言ったが、あれはウソじゃ。
+      </div>
+      <img className="okido" src="/okido.png" alt="vite" />
+      <div>ワシと一緒にポケモンの名前を覚えるのじゃ。</div>
     </>
   );
 }

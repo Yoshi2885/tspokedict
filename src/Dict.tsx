@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import "./Dict.css";
-// import './App.css'
 
 function Dict() {
   const initURL = "https://pokeapi.co/api/v2/pokemon/";
@@ -16,6 +15,7 @@ function Dict() {
   interface PokemonType {
     height: string;
     weight: number;
+    id: number;
     types: {
       slot: number;
       type: {
@@ -47,6 +47,7 @@ function Dict() {
   const [pokemonsData, setPokemonsData] = useState<PokemonType[]>([]);
   const [ENGNames, setENGNames] = useState<string[]>([]);
   const [JPNames, setJPNames] = useState<string[]>([]);
+  const [dictNunber, setDictNumber] = useState<number[]>([]);
   const [imgURL, setImgURL] = useState<string[]>([]);
   const [type, setType] = useState<string[]>([]);
   const [height, setHeight] = useState<string[]>([]);
@@ -110,7 +111,9 @@ function Dict() {
     );
     const heightArr = pokemonsData.map((poke) => poke.height);
     const weightArr = pokemonsData.map((poke) => poke.weight);
+    const dictNumberArr = pokemonsData.map((poke) => poke.id);
 
+    setDictNumber(dictNumberArr);
     setImgURL(figURLArr);
     setENGNames(EngNameArr);
     setType(typeArr);
@@ -134,9 +137,18 @@ function Dict() {
 
   return (
     <>
+      <div className="top-button">
+        <button className="prev" onClick={handlePrevClick}>
+          戻る
+        </button>
+        <button className="next" onClick={handleNextClick}>
+          次へ
+        </button>
+      </div>
       <div className="cards-container">
         {pokemonsData.map((elem, i) => (
           <div key={i} className="card">
+            <div className="id">図鑑番号: {dictNunber[i]}</div>
             <img src={imgURL[i]} alt="pokefig" />
             <div className="name">
               {ENGNames[i]} / {JPNames[i]}
