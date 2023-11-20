@@ -1,15 +1,137 @@
-import { useState } from 'react';
+import { useEffect, useState } from "react";
+import "./Dict.css";
 // import './App.css'
 
 function Dict() {
+  const initURL = "https://pokeapi.co/api/v2/pokemon/";
+  interface FetchPoke {
+    count: number;
+    next: string | null;
+    previous: string | null;
+    results: {
+      name: string;
+      url: string;
+    }[];
+  }
+  interface PokemonType {
+    height: string;
+    weight: number;
+    types: {
+      slot: number;
+      type: {
+        name: string;
+        url: string;
+      };
+    }[];
+    species: {
+      name: string;
+      url: string;
+    };
+    sprites: {
+      other: {
+        "official-artwork": {
+          front_default: string;
+        };
+      };
+    };
+  }
+  interface JPPokeName {
+    names: {
+      language: {
+        name: string;
+        url: string;
+      };
+      name: string;
+    }[];
+  }
+  const [pokemonsData, setPokemonsData] = useState<PokemonType[]>([]);
+  const [ENGNames, setENGNames] = useState<string[]>([]);
+  const [JPNames, setJPNames] = useState<string[]>([]);
+  const [imgURL, setImgURL] = useState<string[]>([]);
+  const [type, setType] = useState<string[]>([]);
+  const [height, setHeight] = useState<string[]>([]);
+  const [weight, setWeight] = useState<number[]>([]);
+  // 最初に簡易的な２０匹分のjsonデータを取得する関数
+  const getAllPoke = (url: string): Promise<FetchPoke> => {
+    return new Promise((resolve) => {
+      fetch(url)
+        .then((res) => res.json())
+        .then((data) => resolve(data));
+    });
+  };
+  // 簡易的なurlから詳細データを改めて取得する関数
+  const pokeData = async () => {
+    const _pokeData: FetchPoke = await getAllPoke(initURL);
+    const urlArr = _pokeData.results.map((poke) => poke.url);
+    const promises = urlArr.map((url) => fetch(url).then((res) => res.json()));
+    const _pokeDataArr: PokemonType[] = await Promise.all(promises);
+    setPokemonsData(_pokeDataArr);
+  };
+  const getJPName = async () => {
+    const speciesURL = pokemonsData.map((poke) => poke.species.url);
+    const promises = speciesURL.map((url) =>
+      fetch(url).then((res) => res.json())
+    );
+    const JPNameJSON: JPPokeName[] = await Promise.all(promises);
+    const jaNames = JPNameJSON.map(
+      (jpName) => jpName.names.find((name) => name.language.name === "ja")?.name
+    ).filter((name): name is string => name !== undefined);
+    setJPNames(jaNames);
+  };
+
+  const getAllDatas = async () => {
+    await pokeData();
+    await getJPName();
+  };
+  // ページを開いたら２０匹分の詳細データを取得する
+  useEffect(() => {
+    getAllDatas();
+  }, []);
+
+  // ポケモンの詳細データを取得し、それに基づいて関連するステートを更新
+  useEffect(() => {
+    const figURLArr = pokemonsData.map(
+      (poke) => poke.sprites.other["official-artwork"].front_default
+    );
+    const EngNameArr = pokemonsData.map((poke) => poke.species.name);
+    const typeArr = pokemonsData.map((poke) =>
+      poke.types.map((t) => t.type.name).join(", ")
+    );
+    const heightArr = pokemonsData.map((poke) => poke.height);
+    const weightArr = pokemonsData.map((poke) => poke.weight);
+
+    setImgURL(figURLArr);
+    setENGNames(EngNameArr);
+    setType(typeArr);
+    setHeight(heightArr);
+    setWeight(weightArr);
+  }, [pokemonsData]); // JPNamesを依存配列から削除
+
+  useEffect(() => {
+    // JPNames が変更された際にのみ実行
+    if (JPNames.length > 0) {
+      const JapaneseNameArr = JPNames.map((name) => name);
+      // 既存の状態と異なる場合のみ更新
+      if (JapaneseNameArr.join(",") !== JPNames.join(",")) {
+        setJPNames(JapaneseNameArr);
+      }
+    }
+  }, [JPNames]);
+
   return (
     <>
-      <div className="card">
-        <img src="API" alt="pokefig" />
-        <div className="name">pokename</div>
-        <div className="size">pokesize</div>
-        <div className="weight">weight</div>
-        <div className="type">type</div>
+      <div className="cards-container">
+        {pokemonsData.map((elem, i) => (
+          <div key={i} className="card">
+            <img src={imgURL[i]} alt="pokefig" />
+            <div className="name">
+              {ENGNames[i]} / {JPNames[i]}
+            </div>
+            <div className="size">大きさ: {height[i]}</div>
+            <div className="weight">重さ: {weight[i]}</div>
+            <div className="type">タイプ: {type[i]}</div>
+          </div>
+        ))}
       </div>
       <div>
         <button className="prev">戻る</button>
