@@ -51,6 +51,8 @@ function Dict() {
   const [type, setType] = useState<string[]>([]);
   const [height, setHeight] = useState<string[]>([]);
   const [weight, setWeight] = useState<number[]>([]);
+  const [nextUrl, setNextUrl] = useState<string | null>(null);
+  const [prevUrl, setPrevUrl] = useState<string | null>(null);
   // 最初に簡易的な２０匹分のjsonデータを取得する関数
   const getAllPoke = (url: string): Promise<FetchPoke> => {
     return new Promise((resolve) => {
@@ -60,32 +62,41 @@ function Dict() {
     });
   };
   // 簡易的なurlから詳細データを改めて取得する関数
-  const pokeData = async () => {
-    const _pokeData: FetchPoke = await getAllPoke(initURL);
+  const getAllDatas = async (url: string) => {
+    const _pokeData: FetchPoke = await getAllPoke(url);
+    setNextUrl(_pokeData.next);
+    setPrevUrl(_pokeData.previous);
     const urlArr = _pokeData.results.map((poke) => poke.url);
     const promises = urlArr.map((url) => fetch(url).then((res) => res.json()));
     const _pokeDataArr: PokemonType[] = await Promise.all(promises);
     setPokemonsData(_pokeDataArr);
   };
+
   const getJPName = async () => {
     const speciesURL = pokemonsData.map((poke) => poke.species.url);
     const promises = speciesURL.map((url) =>
       fetch(url).then((res) => res.json())
     );
     const JPNameJSON: JPPokeName[] = await Promise.all(promises);
-    const jaNames = JPNameJSON.map(
+    return JPNameJSON.map(
       (jpName) => jpName.names.find((name) => name.language.name === "ja")?.name
     ).filter((name): name is string => name !== undefined);
-    setJPNames(jaNames);
   };
 
-  const getAllDatas = async () => {
-    await pokeData();
-    await getJPName();
+  const handlePrevClick = async () => {
+    if (prevUrl) {
+      await getAllDatas(prevUrl);
+    }
   };
+  const handleNextClick = async () => {
+    if (nextUrl) {
+      await getAllDatas(nextUrl);
+    }
+  };
+
   // ページを開いたら２０匹分の詳細データを取得する
   useEffect(() => {
-    getAllDatas();
+    getAllDatas(initURL);
   }, []);
 
   // ポケモンの詳細データを取得し、それに基づいて関連するステートを更新
@@ -105,6 +116,9 @@ function Dict() {
     setType(typeArr);
     setHeight(heightArr);
     setWeight(weightArr);
+    getJPName().then((jaNames) => {
+      setJPNames(jaNames);
+    });
   }, [pokemonsData]); // JPNamesを依存配列から削除
 
   useEffect(() => {
@@ -134,8 +148,12 @@ function Dict() {
         ))}
       </div>
       <div>
-        <button className="prev">戻る</button>
-        <button className="next">次へ</button>
+        <button className="prev" onClick={handlePrevClick}>
+          戻る
+        </button>
+        <button className="next" onClick={handleNextClick}>
+          次へ
+        </button>
       </div>
     </>
   );
