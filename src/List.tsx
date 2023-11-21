@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "./List.css";
 
-const dbGetURL = "http://localhost:3000/table";
+const dbGetURL = `${import.meta.env.VITE_API_URL}table`;
 
 interface DBTable {
   id: number;
@@ -24,7 +24,7 @@ function List() {
           throw new Error(`Error: ${response.status}`);
         }
         const jsonData = await response.json();
-        setData(jsonData); // jsonDataがDBTable[]型であることを確認
+        setData(jsonData);
       } catch (error) {
         console.error("データの取得に失敗しました:", error);
       }
@@ -35,16 +35,16 @@ function List() {
 
   return (
     <>
-      <div>あなたが間違えたポケモンはこちらです</div>
+      <div className="top-q">あなたが間違えたポケモンはこちらです</div>
       <div>
         <table>
           <thead>
             <tr>
               <th>ID</th>
               <th>図鑑番号</th>
-              <th>すがた</th>
-              <th>英語名</th>
+              <th className="image-text">すがた</th>
               <th>日本語名</th>
+              <th>英語名</th>
             </tr>
           </thead>
           <tbody>
@@ -52,11 +52,11 @@ function List() {
               <tr key={item.id}>
                 <td>{item.id}</td>
                 <td>{item.pokemon_id}</td>
-                <td>
+                <td className="image-cell">
                   <img src={item.img_url} alt={item.jp_name} />
                 </td>
-                <td>{item.eng_name}</td>
                 <td>{item.jp_name}</td>
+                <td>{item.eng_name}</td>
               </tr>
             ))}
           </tbody>

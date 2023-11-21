@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import "./Dict.css";
 
 function Dict() {
-  const rootURL = "http://localhost:3000/";
+  const rootURL = import.meta.env.VITE_API_URL;
   const initURL = "https://pokeapi.co/api/v2/pokemon/";
 
   const [pokeDataArr, setPokeDataArr] = useState<PokeArr[]>([]);

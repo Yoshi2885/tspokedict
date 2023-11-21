@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import "./Test.css";
 
-const rootURL = "http://localhost:3000/";
-const postURL = "http://localhost:3000/postans";
+const rootURL = import.meta.env.VITE_API_URL;
+const postURL = `${import.meta.env.VITE_API_URL}postans`;
 
 interface PokeArr {
   id: number;
