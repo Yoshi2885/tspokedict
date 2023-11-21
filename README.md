@@ -14,15 +14,13 @@
 
 ポケモン言えるかなに挑戦だ。
 
+更にテスト機能、復習機能も実装！
+
 ## データの構造
 
-PokeAPI 叩いて、図鑑を見れるようにする。
+ER 図は下記の通り。
 
-ランダムにポケモンが表示されて名前を当てる。
-
-正誤表を DB に保管して、間違えたものを復習できるお勉強アプリ。
-
-アメリカ語と日本語対応させたい(add-on で)。
+なお、google ログイン認証機能を実装予定。それに伴い user テーブルが今後追加される。
 
 ## DB の構造
 
@@ -33,12 +31,16 @@ erDiagram
       bigint id PK
       string name "ユーザー名"
     }
-    testdata {
+    pokedict {
       int(32) id PK
-      int(32) name "ユーザー名"
-      int(8) poke-no "ポケモン図鑑番号"
-      boolean true-or-false "正誤判定"
+      int(8) user_id
+      int(8) pokemon_id "図鑑番号"
+      string(16) eng_name "英語名"
+      string(16) jp_name "日本語名"
+      string(256) img_url "画像用url"
+      boolean correct_or_incorrect "正誤判定"
     }
+
 ```
 
 ユーザー名を取得しておいて、その値と正誤判定結果から間違えたポケモンのリストを取得する。
@@ -46,111 +48,10 @@ erDiagram
 
 間違えたポケモンだけで出題できるようにする。
 
-## フロントエンド側の構成案
+## 今後実装予定機能
 
-作りたいコンテンツを並べてみる。
+最も大事な遊び心機能！
 
-- Navbar
-  - 各ページ遷移のリンクボタン
-- ようこそページ
-- ポケモン図鑑順番に見る(PokeAPI 使用)
-- ポケモン言えるかな？
-- 苦手リスト
-  - 苦手情報閲覧
-  - 再テスト
+ポケモン図鑑を途中から検索機能！
 
-コンポーネントのイメージ
-
-```javascript
-App.jsx
-<>
-  <Navbar />
-  ※stateでmainコンテツ切り替え
-  <Wellcome />
-  <Dict />
-  <Test />
-  <List />
-  <Retry />
-</>
-
-Navbar.jsx
-<>
-  <button>🏠Home</button>
-  <button>📕ポケモン図鑑</button>
-  <button>🤔ポケモン言えるかな</button>
-  <button>🔎苦手リスト</button>
-  <button>🖊再テスト</button>
-  <button>💬言語切替</button> //チェックボックス→トグルにしたい
-</>
-
-Wellcome.jsx
-<>
-  <div>ようこそ</div>
-  <img src="画像" alt="ポケモン図鑑っぽいなにかか、博士の画像とか"/>
-  <div>君たちは今、</div>
-  <img src="画像" alt="君は今、カントー以下略"/>
-  <div>ポケモンを覚えよう</div>
-</>
-
-Dict.jsx
-<>
-  // map関数で複数枚同時に生成
-  <div className="card">
-  <img src="API" alt="ポケモンの画像"/>
-    <div>ポケモンの名前</div>
-    <div>大きさ</div>
-    <div>体重</div>
-    <div>タイプ</div>
-  </div>
-  <div>
-    <button>戻る</button>
-    <button>次へ</button>
-  </div>
-</>
-
-Test.jsx
-<>
-  <div>さぁ、ポケモンを答えよう</div>
-  <div className="card">
-    <img src="API" alt="ポケモンの画像"/>
-  </div>
-  <div>だーれだ？</div>
-    <input type="text">
-  <button>回答する</button>
-  <div>
-    {correct === null
-      ? null
-      : correct
-      ? "正解！おめでとう！"
-      : "やなかんじぃ〜"}
-  </div>
-</>
-
-List.jsx
-<>
-  <div>正答率75%以上のポケモンは◯/1000匹です</div> // 余力があれば表示したい
-  <div>あなたが間違えたポケモンは以下の通りです</div>
-  <div>表敬式コンテンツ</div>
-</>
-
-Retry.jsx
-<>
-  <div>⌛復習の時間だ⌛</div>
-  <div className="card">
-    <img src="API" alt="ポケモンの画像"/>
-  </div>
-  <div>だーれだ？</div>
-    <input type="text">
-  <button>回答する</button>
-  <div>
-    {correct === null
-      ? null
-      : correct
-      ? "正解！おめでとう！"
-      : "やなかんじぃ〜"}
-  </div>
-</>
-
-
-
-```
+正答率など詳細な数値データを取得！
