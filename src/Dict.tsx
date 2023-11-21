@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import "./Dict.css";
 
 function Dict() {
-  const rootURL = import.meta.env.VITE_API_URL;
+  const rootURL =
+    import.meta.env.VITE_API_URL || "https://pokedict.onrender.com/";
   const initURL = "https://pokeapi.co/api/v2/pokemon/";
 
   const [pokeDataArr, setPokeDataArr] = useState<PokeArr[]>([]);

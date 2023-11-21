@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import "./List.css";
 
-const dbGetURL = `${import.meta.env.VITE_API_URL}table`;
+const rootURL =
+  import.meta.env.VITE_API_URL || "https://pokedict.onrender.com/";
+const dbGetURL = `${rootURL}table`;
 
 interface DBTable {
   id: number;

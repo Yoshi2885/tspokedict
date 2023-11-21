@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import "./Test.css";
 
-const rootURL = import.meta.env.VITE_API_URL;
-const postURL = `${import.meta.env.VITE_API_URL}postans`;
+const rootURL =
+  import.meta.env.VITE_API_URL || "https://pokedict.onrender.com/";
+const postURL = `${rootURL}postans`;
 
 interface PokeArr {
   id: number;
