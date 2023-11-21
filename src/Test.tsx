@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import "./Test.css";
 
 const rootURL = "http://localhost:3000/";
+const postURL = "http://localhost:3000/postans";
 
 interface PokeArr {
   id: number;
@@ -41,17 +42,42 @@ function Test() {
     }
   };
 
-  const sendAns = () => {
+  const postData = async (url: string, data: boolean | null) => {
+    try {
+      const res = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          value: data,
+          pokemon_id: pokemonData[0].id,
+          img_url: pokemonData[0].imgURL,
+          eng_name: pokemonData[0].engName,
+          jp_name: pokemonData[0].jpName,
+        }),
+      });
+      if (!res.ok) {
+        throw new Error("error");
+      }
+    } catch (error) {
+      console.error("error");
+    }
+  };
+
+  const sendAns = async () => {
     if (inputVal === null) return;
     if (
       inputVal === pokemonData[0].engName ||
       inputVal === pokemonData[0].jpName
     ) {
-      resetInput();
-      setCorrectFlag(true);
+      await resetInput();
+      await setCorrectFlag(true);
+      await postData(postURL, true);
     } else {
-      resetInput();
-      setCorrectFlag(false);
+      await resetInput();
+      await setCorrectFlag(false);
+      await postData(postURL, false);
     }
   };
 
