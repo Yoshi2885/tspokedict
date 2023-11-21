@@ -1,73 +1,38 @@
 import { useEffect, useState } from "react";
 import "./Test.css";
 
-const maxNo = 1017;
-const baseURL = "https://pokeapi.co/api/v2/pokemon/";
+const rootURL = "http://localhost:3000/";
 
-interface PokemonType {
-  height: string;
+interface PokeArr {
+  id: number;
+  imgURL: string;
+  engName: string;
+  jpName: string;
+  height: number;
   weight: number;
-  types: {
-    slot: number;
-    type: {
-      name: string;
-      url: string;
-    };
-  }[];
-  species: {
-    name: string;
-    url: string;
-  };
-  sprites: {
-    other: {
-      "official-artwork": {
-        front_default: string;
-      };
-    };
-  };
+  type: string;
 }
-interface JPPokeName {
-  names: {
-    language: {
-      name: string;
-      url: string;
-    };
-    name: string;
-  }[];
-}
+[];
 
 function Test() {
-  const [pokemonData, setPokemonData] = useState<PokemonType | null>(null);
-  const [englishName, setEnglishName] = useState<string | null>(null);
-  const [japaneseName, setJapaneseName] = useState<string | null>(null);
+  const [pokemonData, setPokemonData] = useState<PokeArr[]>([]);
   const [inputVal, setInputVal] = useState<string | null>(null);
   const [correctFlag, setCorrectFlag] = useState<boolean | null>(null);
 
-  const getPokeData = async () => {
-    const randomSelect = Math.floor(Math.random() * (maxNo + 1));
-    const pokeData: PokemonType = await fetch(
-      `${baseURL}${randomSelect}/`
-    ).then((res) => res.json());
-    await setPokemonData(pokeData);
-
-    // 英語名を取得
-    await setEnglishName(pokeData.species.name);
-
-    // 日本語名を取得する
-    const speciesURL = pokeData.species.url;
-    const JPNameJSON: JPPokeName = await fetch(speciesURL).then((res) =>
-      res.json()
-    );
-    const JPName =
-      JPNameJSON.names.find((name) => name.language.name === "ja")?.name ??
-      null;
-    await setJapaneseName(JPName);
+  const getTestPokeData = async () => {
+    try {
+      const res = await fetch(`${rootURL}randomtest`);
+      const data = await res.json();
+      await setPokemonData(data);
+    } catch (error) {
+      console.error("error");
+    }
   };
 
   const getInputVal = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    console.log(e.target.value);
     setInputVal(e.target.value);
   };
+
   const resetInput = () => {
     setInputVal(null);
     const answerInput = document.getElementsByClassName("answer")[0];
@@ -75,37 +40,37 @@ function Test() {
       answerInput.value = "";
     }
   };
+
   const sendAns = () => {
     if (inputVal === null) return;
-    if (inputVal === englishName || inputVal === japaneseName) {
-      console.log("正解です");
+    if (
+      inputVal === pokemonData[0].engName ||
+      inputVal === pokemonData[0].jpName
+    ) {
       resetInput();
       setCorrectFlag(true);
     } else {
-      console.log("不正解です");
       resetInput();
       setCorrectFlag(false);
     }
   };
+
   const reTry = () => {
     setCorrectFlag(null);
     resetInput();
-    getPokeData();
+    getTestPokeData();
   };
 
   useEffect(() => {
-    getPokeData();
+    getTestPokeData();
   }, []);
 
   return (
     <>
       <div className="top-q">だ～れだ？</div>
-      {pokemonData && (
+      {pokemonData.length > 0 && (
         <div className="test-card">
-          <img
-            src={pokemonData.sprites.other["official-artwork"].front_default}
-            alt="pokefig"
-          />
+          <img src={pokemonData[0].imgURL} alt="pokefig" />
         </div>
       )}
       <input className="answer" type="text" onChange={getInputVal} />
@@ -122,7 +87,7 @@ function Test() {
           <img className="rocket" src="/yanakanji.jpeg" alt="vite" />
           <div>やな感じぃ〜！</div>
           <div>
-            正解は：{englishName} / {japaneseName} でした
+            正解は：{pokemonData[0].engName} / {pokemonData[0].jpName} でした
           </div>
         </>
       )}
