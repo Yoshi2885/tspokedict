@@ -1,7 +1,21 @@
-import { useState } from 'react';
+import { useEffect, useState } from "react";
 // import './App.css'
 
 function Retry() {
+  // test用
+  const fetchFunc = async () => {
+    const initURL = "https://pokeapi.co/api/v2/pokemon/";
+    try {
+      const res = await fetch(`http://localhost:3000/pokedict?url=${initURL}`);
+      const data = res.json();
+      console.log(data);
+    } catch (error) {
+      console.error("error");
+    }
+  };
+  useEffect(() => {
+    fetchFunc();
+  }, []);
   return (
     <>
       <div>⌛復習の時間だ⌛</div>
