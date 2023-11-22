@@ -6,10 +6,11 @@ function Dict() {
     import.meta.env.VITE_API_URL || "https://pokedict.onrender.com/";
   const initURL = "https://pokeapi.co/api/v2/pokemon/";
 
-  const [pokeDataArr, setPokeDataArr] = useState<PokeArr[]>([]);
+  const [pokeDataArr, setPokeDataArr] = useState<PokeArr[] | orgArr[]>([]);
   const [nextURL, setNextURL] = useState<null | string>(null);
   const [prevURL, setPrevURL] = useState<null | string>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [inputVal, setInputVal] = useState<number | string | null>(null);
 
   interface PokeArr {
     id: number;
@@ -21,6 +22,27 @@ function Dict() {
     type: string;
   }
   [];
+  interface orgArr {
+    id: string;
+    imgURL: string;
+    engName: string;
+    jpName: string;
+    height: string;
+    weight: string;
+    type: string;
+  }
+  [];
+  const orgObj = [
+    {
+      id: "ナイショ",
+      imgURL: "/corn.png",
+      engName: "ベビーコーン",
+      jpName: "たなちゅー",
+      height: "ちょうどいい",
+      weight: "気にしてる",
+      type: "遊び心を大事に",
+    },
+  ];
 
   const getAllPokemonData = async (url: string | null) => {
     try {
@@ -48,6 +70,27 @@ function Dict() {
       setIsLoading(false);
     }
   };
+  const getInputVal = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    setInputVal(e.target.value);
+    console.log(e.target.value);
+    console.log(typeof e.target.value);
+  };
+  const sendnum = async () => {
+    if (inputVal === null) return;
+    if (inputVal === "たなちゅー") {
+      setIsLoading(true);
+      setPokeDataArr(orgObj);
+      setIsLoading(false);
+    } else if (0 < Number(inputVal && Number(inputVal) < 998)) {
+      let serchURL = "";
+      serchURL = `https://pokeapi.co/api/v2/pokemon/?offset=${
+        Number(inputVal) - 1
+      }&limit=20`;
+      setIsLoading(true);
+      await getAllPokemonData(serchURL);
+      setIsLoading(false);
+    } else return;
+  };
 
   useEffect(() => {
     getAllPokemonData(initURL);
@@ -60,6 +103,15 @@ function Dict() {
         <div className="loading">ロード中…</div>
       ) : (
         <>
+          <div className="search-area">
+            <input
+              className="search-num"
+              type="text"
+              placeholder="1~997の半角数字"
+              onChange={getInputVal}
+            />
+            <button onClick={sendnum}>探す</button>
+          </div>
           <div className="top-button">
             <button className="prev" onClick={handlePrevClick}>
               戻る
