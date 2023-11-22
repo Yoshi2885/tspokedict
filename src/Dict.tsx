@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import "./Dict.css";
+import { orgObj2 } from "./ObjData";
 
 function Dict() {
   const rootURL =
@@ -32,17 +33,6 @@ function Dict() {
     type: string;
   }
   [];
-  const orgObj = [
-    {
-      id: "ナイショ",
-      imgURL: "/corn.png",
-      engName: "ベビーコーン",
-      jpName: "たなちゅー",
-      height: "ちょうどいい",
-      weight: "気にしてる",
-      type: "遊び心を大事に",
-    },
-  ];
 
   const getAllPokemonData = async (url: string | null) => {
     try {
@@ -72,14 +62,12 @@ function Dict() {
   };
   const getInputVal = (e: React.ChangeEvent<HTMLInputElement>): void => {
     setInputVal(e.target.value);
-    console.log(e.target.value);
-    console.log(typeof e.target.value);
   };
   const sendnum = async () => {
     if (inputVal === null) return;
-    if (inputVal === "たなちゅー") {
+    if (inputVal === "BTC5") {
       setIsLoading(true);
-      setPokeDataArr(orgObj);
+      setPokeDataArr(orgObj2);
       setIsLoading(false);
     } else if (0 < Number(inputVal && Number(inputVal) < 998)) {
       let serchURL = "";
@@ -96,6 +84,7 @@ function Dict() {
     const fetchData = async () => {
       await getAllPokemonData(initURL);
       await setIsLoading(false);
+      // console.log(orgObj2);
     };
     fetchData();
   }, []);
