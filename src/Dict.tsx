@@ -9,6 +9,7 @@ function Dict() {
   const [pokeDataArr, setPokeDataArr] = useState<PokeArr[]>([]);
   const [nextURL, setNextURL] = useState<null | string>(null);
   const [prevURL, setPrevURL] = useState<null | string>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   interface PokeArr {
     id: number;
@@ -34,52 +35,63 @@ function Dict() {
   };
   const handlePrevClick = async () => {
     if (prevURL) {
+      setIsLoading(true);
       await getAllPokemonData(prevURL);
+      setIsLoading(false);
     }
   };
 
   const handleNextClick = async () => {
     if (nextURL) {
+      setIsLoading(true);
       await getAllPokemonData(nextURL);
+      setIsLoading(false);
     }
   };
 
   useEffect(() => {
     getAllPokemonData(initURL);
+    setIsLoading(false);
   }, []);
 
   return (
     <>
-      <div className="top-button">
-        <button className="prev" onClick={handlePrevClick}>
-          戻る
-        </button>
-        <button className="next" onClick={handleNextClick}>
-          次へ
-        </button>
-      </div>
-      <div className="cards-container">
-        {pokeDataArr.map((poke, i) => (
-          <div key={i} className="card">
-            <div className="id">図鑑番号: {poke.id}</div>
-            <img src={poke.imgURL} alt="pokefig" />
-            <div className="name">
-              {poke.engName} / {poke.jpName}
-            </div>
-            <div className="size">大きさ: {poke.height}</div>
-            <div className="weight">重さ: {poke.weight}</div>
-            <div className="type">タイプ: {poke.type}</div>
+      {isLoading ? (
+        <div className="loading">ロード中…</div>
+      ) : (
+        <>
+          <div className="top-button">
+            <button className="prev" onClick={handlePrevClick}>
+              戻る
+            </button>
+            <button className="next" onClick={handleNextClick}>
+              次へ
+            </button>
           </div>
-        ))}
-      </div>
-      <div>
-        <button className="prev" onClick={handlePrevClick}>
-          戻る
-        </button>
-        <button className="next" onClick={handleNextClick}>
-          次へ
-        </button>
-      </div>
+          <div className="cards-container">
+            {pokeDataArr.map((poke, i) => (
+              <div key={i} className="card">
+                <div className="id">図鑑番号: {poke.id}</div>
+                <img src={poke.imgURL} alt="pokefig" />
+                <div className="name">
+                  {poke.engName} / {poke.jpName}
+                </div>
+                <div className="size">大きさ: {poke.height}</div>
+                <div className="weight">重さ: {poke.weight}</div>
+                <div className="type">タイプ: {poke.type}</div>
+              </div>
+            ))}
+          </div>
+          <div>
+            <button className="prev" onClick={handlePrevClick}>
+              戻る
+            </button>
+            <button className="next" onClick={handleNextClick}>
+              次へ
+            </button>
+          </div>
+        </>
+      )}
     </>
   );
 }
