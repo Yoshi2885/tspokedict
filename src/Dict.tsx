@@ -93,8 +93,11 @@ function Dict() {
   };
 
   useEffect(() => {
-    getAllPokemonData(initURL);
-    setIsLoading(false);
+    const fetchData = async () => {
+      await getAllPokemonData(initURL);
+      await setIsLoading(false);
+    };
+    fetchData();
   }, []);
 
   return (
